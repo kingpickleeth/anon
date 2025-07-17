@@ -32,4 +32,10 @@ html, body {
     object-fit: contain; /* 👈 prevents distortion */
     border-radius: 8px;
   }
+  xLink.on('pointerover', () => {
+    xLink.setStyle({ fill: '#00B3FF' });
+  });
+  xLink.on('pointerout', () => {
+    xLink.setStyle({ fill: '#ffffff' });
+  });
   

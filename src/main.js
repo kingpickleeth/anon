@@ -78,6 +78,25 @@ class DingleberryDrop extends Phaser.Scene {
     }
   
     item.destroy();
+    // Add clickable "𝕏" in bottom right corner
+const xLink = this.add.text(this.scale.width - 20, this.scale.height - 20, '𝕏', {
+    fontSize: '28px',
+    fill: '#ffffff',
+    fontFamily: 'Arial',
+  })
+    .setOrigin(1, 1)
+    .setInteractive({ useHandCursor: true });
+  
+  xLink.on('pointerdown', () => {
+    window.open('https://x.com/Dingleonape', '_blank');
+  });
+  xLink.on('pointerover', () => {
+    xLink.setStyle({ fill: '#00B3FF' });
+  });
+  xLink.on('pointerout', () => {
+    xLink.setStyle({ fill: '#ffffff' });
+  });
+    
   }
   
 
