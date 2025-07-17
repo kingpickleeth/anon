@@ -61,23 +61,25 @@ class DingleberryDrop extends Phaser.Scene {
       this.isTouch = true;
     });
   }
-
   catchItem(player, item) {
     const type = item.texture.key;
+  
     if (type === 'banana') {
       this.lives--;
       this.livesText.setText(`Lives: ${this.lives}`);
+      
+      if (this.lives <= 0) {
+        this.scene.restart();
+        return; // ✅ prevent further score logic
+      }
     } else {
       this.score += 10;
       this.scoreText.setText(`Score: ${this.score}`);
     }
-
+  
     item.destroy();
-
-    if (this.lives <= 0) {
-      this.scene.restart();
-    }
   }
+  
 
   spawnItem() {
     const type = Phaser.Math.Between(0, 4) === 0 ? 'banana' : 'dingleberry';
