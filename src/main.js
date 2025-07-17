@@ -12,10 +12,10 @@ class DingleberryDrop extends Phaser.Scene {
 
   preload() {
   
-    this.load.image('banana', '/public/assets/tp.png');
-    this.load.image('tp', '/public/assets/tp.png');
-    this.load.image('dingleberry', '/public/assets/dingleberry.png');
-    this.load.image('playerberry', '/public/assets/playerberry.png'); // controlled character
+    this.load.image('banana', 'assets/tp.png');
+    this.load.image('tp', 'assets/tp.png');
+    this.load.image('dingleberry', 'assets/dingleberry.png');
+    this.load.image('playerberry', 'assets/playerberry.png'); // controlled character
   }
 
   create() {
