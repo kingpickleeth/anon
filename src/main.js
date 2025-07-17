@@ -1,8 +1,5 @@
 import * as Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.esm.js';
 
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600; 
-
 class DingleberryDrop extends Phaser.Scene {
   constructor() {
     super('DingleberryDrop');
@@ -11,38 +8,64 @@ class DingleberryDrop extends Phaser.Scene {
   }
 
   preload() {
-  
-    this.load.image('banana', 'assets/tp.png');
+    this.load.image('banana', 'assets/banana.png');
     this.load.image('tp', 'assets/tp.png');
     this.load.image('dingleberry', 'assets/dingleberry.png');
-    this.load.image('playerberry', 'assets/playerberry.png'); // controlled character
+    this.load.image('playerberry', 'assets/playerberry.png');
   }
 
   create() {
-    this.add.text(20, 20, '💩 Dingle Drop', { fontSize: '28px', fill: '#fff' });
-    this.scoreText = this.add.text(20, 60, 'Score: 0', { fontSize: '22px', fill: '#fff' });
-    this.livesText = this.add.text(20, 90, 'Lives: 3', { fontSize: '22px', fill: '#fff' });
-    this.player = this.physics.add.sprite(GAME_WIDTH / 2, GAME_HEIGHT - 50, 'playerberry');
+    const { width, height } = this.scale;
 
-    this.player.setScale(0.2); // 👈 scale down
-    this.player.setCollideWorldBounds(true);
+    // Title
+    this.add.text(width / 2, 20, '💩 Dingle Drop', {
+      fontSize: '32px',
+      fill: '#fff',
+      fontFamily: 'Comic Sans MS',
+    }).setOrigin(0.5);
 
+    // Score & lives
+    this.scoreText = this.add.text(20, 20, 'Score: 0', {
+      fontSize: '20px',
+      fill: '#fff',
+    });
+
+    this.livesText = this.add.text(width - 20, 20, 'Lives: 3', {
+      fontSize: '20px',
+      fill: '#fff',
+    }).setOrigin(1, 0);
+
+    // Player
+    this.player = this.physics.add.sprite(width / 2, height - 60, 'playerberry');
+    this.player.setScale(0.1).setCollideWorldBounds(true);
+
+    // Input
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.isTouch = false;
 
+    // Items
     this.items = this.physics.add.group();
     this.physics.add.overlap(this.player, this.items, this.catchItem, null, this);
 
+    // Item drop loop
     this.time.addEvent({
       delay: 1000,
       callback: this.spawnItem,
       callbackScope: this,
       loop: true,
     });
+
+    // Touch input
+    this.input.on('pointermove', (pointer) => {
+      this.player.x = pointer.x;
+      this.isTouch = true;
+    });
   }
 
   catchItem(player, item) {
-    if (item.texture.key === 'banana') {
-      this.lives -= 1;
+    const type = item.texture.key;
+    if (type === 'banana') {
+      this.lives--;
       this.livesText.setText(`Lives: ${this.lives}`);
     } else {
       this.score += 10;
@@ -57,34 +80,42 @@ class DingleberryDrop extends Phaser.Scene {
   }
 
   spawnItem() {
-    const itemType = Phaser.Math.Between(0, 4) === 0 ? 'banana' : 'dingleberry';
-    const x = Phaser.Math.Between(50, GAME_WIDTH - 50);
-    const item = this.items.create(x, 0, itemType);
-    item.setScale(0.1); // 👈 scale down falling items
-    item.setVelocityY(200);
+    const type = Phaser.Math.Between(0, 4) === 0 ? 'banana' : 'dingleberry';
+    const x = Phaser.Math.Between(30, this.scale.width - 30);
+    const item = this.items.create(x, 0, type);
+    item.setScale(0.08);
+    item.setVelocityY(250);
   }
 
   update() {
-    this.player.setVelocityX(0);
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-300);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(300);
+    if (!this.isTouch) {
+      this.player.setVelocityX(0);
+      if (this.cursors.left.isDown) {
+        this.player.setVelocityX(-300);
+      } else if (this.cursors.right.isDown) {
+        this.player.setVelocityX(300);
+      }
     }
   }
 }
 
 const config = {
   type: Phaser.AUTO,
-  width: GAME_WIDTH,
-  height: GAME_HEIGHT,
-  backgroundColor: '#222',
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800,
+    height: 600,
+  },
+  backgroundColor: '#1A1F2B',
   parent: 'game-container',
+  scene: DingleberryDrop,
   physics: {
     default: 'arcade',
-    arcade: { gravity: { y: 0 } },
+    arcade: {
+      gravity: { y: 0 },
+    },
   },
-  scene: DingleberryDrop,
 };
 
 new Phaser.Game(config);
